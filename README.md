@@ -20,7 +20,7 @@ Ansible role to deploy a complete Graylog stack with MongoDB and OpenSearch usin
 - hosts: graylog_servers
   become: yes
   roles:
-    - graylog-docker
+    - astigmata.ansible-role-graylog
 ```
 
 ## Default Configuration
