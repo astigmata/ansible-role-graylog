@@ -1,0 +1,28 @@
+# Graylog Stack Configuration
+
+# Versions
+graylog_version: "6.3.1"
+opensearch_version: "1.3.16"
+mongodb_version: "6.0"
+
+# Network and directories
+docker_network_name: "graylog_network"
+graylog_data_dir: "/opt/graylog/data"
+mongodb_data_dir: "/opt/graylog/mongodb"
+opensearch_data_dir: "/opt/graylog/opensearch"
+
+# Authentication - CHANGE IN PRODUCTION
+graylog_admin_username: "admin"
+graylog_admin_password: "admin"
+graylog_password_secret: "somepasswordpepper"
+graylog_admin_password_sha2: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+
+# MongoDB credentials
+mongodb_root_username: "root"
+mongodb_root_password: "mongopass123"
+mongodb_graylog_username: "graylog"
+mongodb_graylog_password: "graylogpass123"
+mongodb_database: "graylog"
+
+# OpenSearch credentials
+opensearch_admin_password: "OpenSearch123!"

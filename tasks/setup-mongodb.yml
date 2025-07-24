@@ -1,0 +1,29 @@
+---
+- name: Deploy MongoDB container
+  community.docker.docker_container:
+    name: graylog_mongodb
+    image: "mongo:{{ mongodb_version }}"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ docker_network_name }}"
+    ports:
+      - "27017:27017"
+    volumes:
+      - "{{ mongodb_data_dir }}:/data/db"
+    env:
+      MONGO_INITDB_ROOT_USERNAME: "{{ mongodb_root_username }}"
+      MONGO_INITDB_ROOT_PASSWORD: "{{ mongodb_root_password }}"
+      MONGO_INITDB_DATABASE: "{{ mongodb_database }}"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+- name: Wait for MongoDB readiness
+  wait_for:
+    port: 27017
+    host: localhost
+    delay: 10
+    timeout: 60

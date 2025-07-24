@@ -1,0 +1,42 @@
+---
+- name: Verify Graylog API availability
+  uri:
+    url: "http://localhost:9000/api/system"
+    user: "{{ graylog_admin_username }}"
+    password: "{{ graylog_admin_password }}"
+    force_basic_auth: yes
+  register: api_response
+  retries: 3
+  delay: 10
+
+- name: Create default GELF UDP input
+  uri:
+    url: "http://localhost:9000/api/system/inputs"
+    method: POST
+    user: "{{ graylog_admin_username }}"
+    password: "{{ graylog_admin_password }}"
+    force_basic_auth: yes
+    body_format: json
+    headers:
+      X-Requested-By: "ansible"
+      Content-Type: "application/json"
+    body:
+      title: "GELF UDP"
+      type: "org.graylog2.inputs.gelf.udp.GELFUDPInput"
+      configuration:
+        bind_address: "0.0.0.0"
+        port: 12201
+        recv_buffer_size: 262144
+      global: true
+    status_code: [201, 202, 400]
+  register: input_result
+  failed_when: false
+
+- name: Display deployment summary
+  debug:
+    msg:
+      - "Graylog {{ graylog_version }} deployment completed"
+      - "Web Interface: http://localhost:9000"
+      - "Login: {{ graylog_admin_username }} / {{ graylog_admin_password }}"
+      - "GELF Input: {{ 'Created' if input_result.status in [201, 202] else 'Exists or Failed' }}"
+      - "WARNING: Change default credentials for production use"

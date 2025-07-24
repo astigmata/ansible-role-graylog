@@ -1,0 +1,14 @@
+- name: Preflight check
+  import_tasks: preflight-check.yml
+
+- name: MongoDB container
+  import_tasks: setup-mongodb.yml
+
+- name: Opensearch container
+  import_tasks: setup-opensearch.yml
+
+- name: Graylog container
+  import_tasks: setup-graylog.yml
+
+- name: Final
+  import_tasks: final-step.yml

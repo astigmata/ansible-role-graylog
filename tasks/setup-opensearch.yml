@@ -1,0 +1,42 @@
+---
+- name: Deploy OpenSearch container
+  community.docker.docker_container:
+    name: graylog_opensearch
+    image: "opensearchproject/opensearch:{{ opensearch_version }}"
+    state: started
+    restart_policy: unless-stopped
+    networks:
+      - name: "{{ docker_network_name }}"
+        aliases:
+          - opensearch
+          - elasticsearch
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    volumes:
+      - "{{ opensearch_data_dir }}:/usr/share/opensearch/data"
+    env:
+      compatibility.override_main_response_version: "true"
+      cluster.routing.allocation.disk.threshold_enabled: "false"
+      bootstrap.memory_lock: "true"
+      discovery.type: "single-node"
+      action.auto_create_index: "false"
+      plugins.security.ssl.http.enabled: "false"
+      plugins.security.disabled: "true"
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: "{{ opensearch_admin_password }}"
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+    ulimits:
+      - "memlock:-1:-1"
+      - "nofile:65536:65536"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+- name: Wait for OpenSearch readiness
+  wait_for:
+    port: 9200
+    host: localhost
+    delay: 20
+    timeout: 120
